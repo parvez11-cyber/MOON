@@ -15,13 +15,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Unzip project (if uploaded as a zip)
+        run: |
+          mkdir -p _proj
+          find . -maxdepth 1 -name "*.zip" -print0 | while IFS= read -r -d '' Z; do
+            echo "Unzipping: $Z"
+            unzip -q -o "$Z" -d _proj
+          done
+
       - name: Find project folder
         id: proj
         run: |
           G=$(find . -name gradlew -not -path "./.git/*" | head -1)
           if [ -z "$G" ]; then
             echo "gradlew paoa jay nai. Repo-te ei file gulo ache:"
-            ls -la
             find . -maxdepth 2 -not -path "./.git/*" | head -60
             exit 1
           fi
